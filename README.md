@@ -4,4 +4,4 @@ echo TATTLER_SERVER=tattler.yourdomain.tld >> .env
 
 cd plugins/grohman/tattler
 
-composer update
+composer install
