@@ -1,11 +1,4 @@
 // $.tattler
-var desktopNotifications = false;
-if (window.Notification !== undefined) {
-    Notification.requestPermission(function (result) {
-        desktopNotifications = result
-    });
-}
-
 (function ($) {
     "use strict";
 
@@ -45,7 +38,7 @@ if (window.Notification !== undefined) {
                     opts['title'] = data['title'];
                 }
 
-                if (desktopNotifications && desktopNotifications !== 'denied') {
+                if (window.Notification && window.Notification.permission == 'granted') {
                     if(opts['title'] !== undefined) {
                         opts['text'] = opts['title']+"\n---------------------------------------\n"+opts['text'];
                     }
