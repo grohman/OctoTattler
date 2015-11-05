@@ -16,15 +16,14 @@
                 console.warn('-------------------------------------------------------------');
             },
             'string': function (data) {
-                var opts = {};
+                var text;
                 if (data['title'] !== undefined) {
-                    opts['title'] = data['title'];
+                    text = data['title'];
                 }
-                var text = data['message'];
-                if (data['message'] == undefined && data['text'] !== undefined) {
-                    text = data['text'];
-                }
-                $.alert(text, null, opts);
+                
+                text+=data['message'];
+
+                alert(text);
             },
             'growl': function (data) {
                 var opts = {
