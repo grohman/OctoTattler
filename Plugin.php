@@ -51,7 +51,7 @@ class Plugin extends PluginBase
         $cacheIdx = $widget->model->getCacheIdx();
 
         if(method_exists($widget, 'getColumns')) {
-            $columns = Cache::remember($cacheIdx, Carbon::now()->addHour(), function () use ($widget) {
+            $columns = Cache::rememberForever($cacheIdx, function () use ($widget) {
                 $result = [ ];
                 foreach ($widget->getColumns() as $column => $col) {
                     $result[ $column ] = trans($col->label);
