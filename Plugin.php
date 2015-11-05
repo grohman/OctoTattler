@@ -71,7 +71,7 @@ class Plugin extends PluginBase
         $widget->addJs('https://cdn.jsdelivr.net/jquery.gritter/1.7.4/js/jquery.gritter.min.js');
         $widget->addJs('https://cdn.socket.io/socket.io-1.3.7.js');
         $widget->addJs('/plugins/grohman/tattler/js/tattler.js',
-            [ 'id' => 'tattlerJs', 'data-rooms' => json_encode($rooms) ]);
+            [ 'id' => 'tattlerJs', 'data-debug' => env('APP_DEBUG'), 'data-rooms' => json_encode($rooms) ]);
         $widget->addJs('/plugins/grohman/tattler/js/crud_handlers.js');
     }
 }

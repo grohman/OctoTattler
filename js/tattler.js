@@ -2,28 +2,49 @@
 (function ($) {
     "use strict";
 
-    function tattler(action, val) {
+    function tattler(debug) {
+        if (debug == undefined) {
+            debug = 0;
+        }
+
         this['socket'] = null;
         this['ws'] = null;
 
         this['handlers'] = {};
         this['rooms'] = {};
 
+        this.log = function (type, arg) {
+            if (debug != 0) {
+                console[type](arg);
+            }
+        }
+        var _this = this;
         this.basicHandlers = {
             'console.log': function (data) {
-                console.warn('-------------------------------------------------------------');
-                console.warn('Tattler remote: ' + data['message']);
-                console.warn('-------------------------------------------------------------');
+                _this.log('warn', '-------------------------------------------------------------');
+                _this.log('warn', 'Tattler remote: ' + data['message']);
+                _this.log('warn', '-------------------------------------------------------------');
             },
-            'string': function (data) {
+            'alert': function (data) {
                 var text;
                 if (data['title'] !== undefined) {
-                    text = data['title'];
+                    text = data['title'] + "\n---------------------------\n\n";
                 }
-                
-                text+=data['message'];
+
+                text += data['message'];
 
                 alert(text);
+            },
+            confirm: function (data) {
+                if (confirm(data['message'])) {
+                    if (data['yes'] !== undefined && window[data['yes']] !== undefined) {
+                        window[data['yes']]();
+                    }
+                } else {
+                    if (data['no'] !== undefined && window[data['no']] !== undefined) {
+                        window[data['no']]();
+                    }
+                }
             },
             'growl': function (data) {
                 var opts = {
@@ -38,15 +59,15 @@
                 }
 
                 if (window.Notification && window.Notification.permission == 'granted') {
-                    if(opts['title'] !== undefined) {
-                        opts['text'] = opts['title']+"\n---------------------------------------\n"+opts['text'];
+                    if (opts['title'] !== undefined) {
+                        opts['text'] = opts['title'] + "\n---------------------------------------\n" + opts['text'];
                     }
                     var notification = new Notification($.trim($('title').text()), {
                         tag: data['handler'],
                         body: opts['text'],
                         icon: location.origin + "/themes/demo/assets/images/october.png"
                     });
-                    setTimeout(function(){
+                    setTimeout(function () {
                         notification.close();
                     }, 5000);
                 } else {
@@ -58,21 +79,21 @@
         this.addHandler = function (event, fn) {
             if (this.handlerExists(event) == false) {
                 this.handlers[event] = fn;
-                console.info('Tattler: added handler for event «' + event + '»');
+                this.log('info', 'Tattler: added handler for event «' + event + '»');
             } else {
-                console.error('Tattler: preventing handler creation for event «' + event + '»: already exists. Check your code.')
+                this.log('error', 'Tattler: preventing handler creation for event «' + event + '»: already exists. Check your code.')
             }
         };
         this.addRoom = function (room) {
-            console.log('Tattler: requesting access to room ' + room);
+            this.log('log', 'Tattler: requesting access to room ' + room);
             var _this = this;
             if (_this.rooms[room] == undefined) {
                 _this.rooms[room] = false;
                 _this.requestRoomsAccess(function (xhr) {
                     _this.socket.emit('subscribe', room);
                     _this.rooms[room] = true;
-                    console.log('Tattler: subscribed to room', room);
-                    console.log('Tattler: new rooms listing', _this.rooms);
+                    _this.log('log', 'Tattler: subscribed to room', room);
+                    _this.log('log', 'Tattler: new rooms listing', _this.rooms);
                 });
             }
         };
@@ -82,57 +103,14 @@
             }
             return true;
         };
-
-
-        // livemessaging handler
-
-        var livemessaging = {
-            'add_handler': function (a, b) {
-                console.log('lm: add_handler', a)
-                return window.tattler.addHandler(a, b);
-            },
-            'isConnected': function () {
-                return true;
-            },
-            'change_url': function (url) {
-                return true;
-            },
-            'handler_exists': function (a) {
-                console.log('lm: handler_exists', a)
-                return window.tattler.handlerExists(a);
-            },
-            'add_namespace': function (a) {
-                console.log('lm: add_namespace', a)
-                var w = setInterval(function () {
-                    if (window.tattler.socket.connected) {
-                        window.tattler.addRoom(a);
-                        clearInterval(w);
-                    }
-                }, 500);
-                return true;
-            },
-            'disconnect': function () {
-                return true;
-            },
-            'connect': function () {
-                return true;
-            }
-        };
-        var livemessagingSettings = {
-            'socket': {
-                'conn': true,
-                'read': null
-            }
-        };
-        $('<div>').addClass('hidden').attr('id', 'live_messaging').data('live_messaging', livemessaging).data('settings', livemessagingSettings).appendTo('body');
     }
 
     tattler.prototype = {
         'init': function () {
             var _this = this;
-
+            _this.log('info', "Tattler: creating socket's stuff...");
             if (this['ws'] == null) {
-                console.info('Tattler: requesting WS url');
+                _this.log('info', 'Tattler: requesting WS url');
                 $.getJSON('/_tattler', function (res) {
                     _this['ws'] = res['ws'].replace(/\/$/, "");
                     _this.connect();
@@ -147,19 +125,19 @@
         },
         'connect': function () {
             var _this = this;
-            console.info('Tattler: processing socket at ' + this['ws'])
+            _this.log('info', 'Tattler: processing socket at ' + this['ws'])
 
             if (this.socket == null) {
-                console.info('Tattler: creating new socket')
+                _this.log('info', 'Tattler: creating new socket')
                 this.socket = io(this['ws']);
                 this.socket.on('connect', function () {
-                    console.warn('Tattler: connected');
+                    _this.log('warn', 'Tattler: connected');
                     $(document).trigger('tattler.connected');
                     _this.requestRoomsAccess(function (xhr) {
                         for (var i in _this.rooms) {
                             if (_this.rooms[i] == false) {
                                 _this.socket.emit('subscribe', i);
-                                console.log('Tattler: subscribed to room', i);
+                                _this.log('log', 'Tattler: subscribed to room', i);
                                 _this.rooms[i] = true;
                             }
                         }
@@ -200,7 +178,8 @@
         'requestRoomsAccess': function (callback) {
             var socketId = this.socket.io.engine.id;
             var rooms = Object.keys(this.rooms).join(',');
-            console.log('Tattler: requesting access for ' + socketId, rooms)
+            this.log('log', 'Tattler: requesting access for ' + socketId, rooms)
+            var _this = this;
             $.clickHelper({
                 url: '/_tattler',
                 data: {'socketId': socketId, 'rooms': rooms},
@@ -215,17 +194,16 @@
                     console.error('Tattler: ошибка при запросе доступа к каналам связи', rooms, xhr)
                 },
                 complete: function () {
-                    console.log('Tattler: access request for ' + socketId + ' is complete');
+                    _this.log('log', 'Tattler: access request for ' + socketId + ' is complete');
                 }
 
             });
         }
     };
 
-    $.tattler = function () {
+    $.tattler = function (debug) {
         if (window.tattler == undefined) {
-            console.info("Tattler: creating socket's stuff...");
-            var rev = new tattler();
+            var rev = new tattler(debug);
             rev.init();
             window.tattler = rev;
             return rev;
@@ -233,13 +211,15 @@
         return window.tattler;
     };
 
-    $.tattler();
-    $(document).on('tattler.connected', function(){
+    var debug = $('script#tattlerJs').data('debug');
+    $.tattler(debug);
+    $(document).on('tattler.connected', function () {
         var rooms = $('script#tattlerJs').data('rooms');
-        for(var i in rooms) {
-            window.tattler.addRoom(rooms[i]);
+        if(typeof rooms == 'object') {
+            for (var i in rooms) {
+                window.tattler.addRoom(rooms[i]);
+            }
         }
-
     });
 
 
