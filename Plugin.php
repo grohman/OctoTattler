@@ -30,14 +30,16 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        // Extend all backend list usage
-        Event::listen('backend.list.extendColumns', function ($widget) {
-            $this->inject($widget);
-        });
+        if(null != config()->get('grohman.tattler::server')) {
+            // Extend all backend list usage
+            Event::listen('backend.list.extendColumns', function ($widget) {
+                $this->inject($widget);
+            });
 
-        Event::listen('backend.form.extendFields', function ($widget) {
-            $this->inject($widget);
-        });
+            Event::listen('backend.form.extendFields', function ($widget) {
+                $this->inject($widget);
+            });
+        }
     }
 
     protected function inject($widget)
