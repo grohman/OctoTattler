@@ -49,7 +49,18 @@ class Plugin extends PluginBase
         }
 
         if(method_exists($widget, 'getColumns')) {
+<<<<<<< HEAD
             $columns = $widget->model->getWidgetColumns($widget->getColumns());
+=======
+            $columns = Cache::rememberForever($cacheIdx, function () use ($widget) {
+                $result = [ ];
+                foreach ($widget->getColumns() as $column => $col) {
+                    $result[ $column ] = trans($col->label);
+                }
+
+                return $result;
+            });
+>>>>>>> 79dfd3ba9dcd4a892375cf07e54a618f175990d1
         } else {
             $columns = $widget->model->getWidgetColumns();
         }
