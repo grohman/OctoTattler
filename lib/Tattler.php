@@ -159,7 +159,7 @@ class Tattler
             }
         }
 
-        return $result;
+        return array_unique($result);
     }
 
     public function getDefaultRooms($extraRooms = [ ])
