@@ -58,7 +58,8 @@ class Inject extends ExtensionBase
             }
         }
 
-        return [
+
+        $result = [
             'message_id' => uniqid(),
             'handler' => $handler,
             'row_id' => $model->getKey(),
@@ -68,6 +69,8 @@ class Inject extends ExtensionBase
             'columns' => $columns,
             'row_data' => $message
         ];
+
+        return $result;
     }
 
     /** Возвращает данные о текущем пользователе. Пусть все знают кто сделал изменения в базе данных.
@@ -75,9 +78,12 @@ class Inject extends ExtensionBase
      */
     protected function getUser()
     {
-        $user = BackendAuth::getUser();
+        if(BackendAuth::getUser()) {
+            $user = BackendAuth::getUser();
 
-        return [ 'id' => $user->getKey(), 'name' => $user[ 'first_name' ] . ' ' . $user[ 'last_name' ], ];
+            return [ 'id' => $user->getKey(), 'name' => $user[ 'first_name' ] . ' ' . $user[ 'last_name' ], ];
+        }
+        return ['id' => null, 'name' => 'Анонимно'];
     }
 
     /** Возвращает ключ массива с названиями столбцов, полученных в Plugin
@@ -86,5 +92,26 @@ class Inject extends ExtensionBase
     public function getCacheIdx()
     {
         return 'tattler:models:' . get_class($this->target) . ':' . app()->getLocale();
+    }
+
+    public function getWidgetColumns($columns = null)
+    {
+        if($columns) {
+            return Cache::rememberForever($this->getCacheIdx(), function () use ($columns) {
+                $result = [ ];
+                foreach ($columns as $column => $col) {
+                    $result[ $column ] = trans($col->label);
+                }
+
+                return $result;
+            });
+        } else {
+            return Cache::get($this->getCacheIdx());
+        }
+    }
+
+    public function forgetWidgetColumns()
+    {
+        return Cache::forget($this->getCacheIdx());
     }
 }

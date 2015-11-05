@@ -48,31 +48,13 @@ class Plugin extends PluginBase
             $widget->model->extendClassWith('\Grohman\Tattler\Lib\Inject');
         }
 
-        $cacheIdx = $widget->model->getCacheIdx();
-
         if(method_exists($widget, 'getColumns')) {
-            $columns = Cache::remember($cacheIdx, Carbon::now()->addHour(), function () use ($widget) {
-                $result = [ ];
-                foreach ($widget->getColumns() as $column => $col) {
-                    $result[ $column ] = trans($col->label);
-                }
-
-                return $result;
-            });
+            $columns = $widget->model->getWidgetColumns($widget->getColumns());
         } else {
-            $columns = Cache::get($cacheIdx);
+            $columns = $widget->model->getWidgetColumns();
         }
 
         if ($columns) {
-            // при открытии страницы редактирования записи столбцов таблицы уже нету
-            $widget->model->addDynamicMethod('getWidgetColumns', function () use ($columns) {
-                return $columns;
-            });
-
-            $widget->model->addDynamicMethod('forgetWidgetColumns', function () use ($cacheIdx) {
-                Cache::forget($cacheIdx);
-            });
-
             $room = Tattler::addRoom(get_class($widget->model));
             $room->allow();
 
