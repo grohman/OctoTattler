@@ -13,9 +13,15 @@
         this['handlers'] = {};
         this['rooms'] = {};
 
-        this.log = function (type, arg) {
+        this.log = function (type, arg1, arg2, arg3) {
             if (debug != 0) {
-                console[type](arg);
+                if(arg3 !== undefined) {
+                    console[type](arg1, arg2, arg3);
+                } else if(arg2 !== undefined){
+                    console[type](arg1, arg2);
+                } else {
+                    console[type](arg1);
+                }
             }
         }
         var _this = this;
@@ -116,7 +122,7 @@
                     _this.connect();
                 }).error(function () {
                     var err = 'Ошибка при создании сокета: сервер не сообщил адрес для подключения';
-                    console.error(err);
+                    _this.log('error', err);
                     $.alert(err, null, {title: 'Ошибка Tattler'});
                 });
             } else {
@@ -144,7 +150,7 @@
                     });
                 });
                 this.socket.on('disconnect', function () {
-                    console.error('Tattler: disconnected');
+                    _this.log('error', 'Tattler: disconnected');
                     $(document).trigger('tattler.disconnected');
                     for (var i in _this.rooms) {
                         _this.rooms[i] = false;
@@ -170,7 +176,7 @@
 
                 })
             } else {
-                console.info('Tattler: reconnecting to socket at ' + this['ws'])
+                _this.log('info', 'Tattler: reconnecting to socket at ' + this['ws'])
                 this.socket.io.uri = url;
                 this.socket.connect();
             }
