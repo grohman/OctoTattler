@@ -86,7 +86,7 @@ var ocCrudHandlers = function () {
     };
 
     var updateTable = function (data, type, callback) {
-        if ($('table').length) {
+        if ($('table').length != 0 && $('form').length == 0) {
             $('table').request('list::onRefresh', {
                 complete: function () {
                     if (typeof callback == 'function') {
