@@ -1,10 +1,8 @@
 <?php namespace Grohman\Tattler;
 
 use Backend\Facades\BackendAuth;
-use Carbon\Carbon;
 use Event;
 use Grohman\Tattler\Facades\Lib as Tattler;
-use Illuminate\Support\Facades\Cache;
 use System\Classes\PluginBase;
 
 /**
@@ -30,7 +28,7 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        if(null != config()->get('grohman.tattler::server')) {
+        if (null != config()->get('grohman.tattler::server')) {
             // Extend all backend list usage
             Event::listen('backend.list.extendColumns', function ($widget) {
                 $this->inject($widget);
@@ -48,7 +46,7 @@ class Plugin extends PluginBase
             $widget->model->extendClassWith('\Grohman\Tattler\Lib\Inject');
         }
 
-        if(method_exists($widget, 'getColumns')) {
+        if (method_exists($widget, 'getColumns')) {
             $columns = $widget->model->getWidgetColumns($widget->getColumns());
         } else {
             $columns = $widget->model->getWidgetColumns();

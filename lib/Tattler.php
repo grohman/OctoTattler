@@ -1,6 +1,7 @@
 <?php namespace Grohman\Tattler\Lib;
 
 use Cache;
+use Event;
 use Httpful\Handlers\JsonHandler;
 use Httpful\Httpful;
 use Httpful\Request as HRequest;
@@ -12,6 +13,7 @@ use Session;
 /*
  * Tattler::room(new \Grohman\Reviews\Models\Item)->say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'В комнату модуля Reviews']);
  * Tattler::user(\Backend\Models\User::first())->say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'Админу']);
+ * Tattler::currentUser()->say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'Себе в браузер']);
  * Tattler::say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'Всем']);
  * */
 
@@ -51,18 +53,6 @@ class Tattler
     protected function getTattlerUri()
     {
         return config()->get('grohman.tattler::server');
-    }
-
-    public function addRoom($room)
-    {
-        if ($room instanceof Room) {
-            $result = $room;
-        } else {
-            $result = new Channels\Room($room, $this->getSessionId());
-        }
-        $this->rooms[ $result->getName() ] = $result;
-
-        return $result;
     }
 
     public function addUser($user)
@@ -176,7 +166,7 @@ class Tattler
     {
         if (is_string($room)) {
             $this->target = $room;
-        } else if($room instanceof Channel){
+        } else if ($room instanceof Channel) {
             $this->target = $room->getName();
         } else {
             $this->target = $this->addRoom($room)->getName();
@@ -185,10 +175,30 @@ class Tattler
         return $this;
     }
 
+    public function addRoom($room)
+    {
+        if ($room instanceof Room) {
+            $result = $room;
+        } else {
+            $result = new Channels\Room($room, $this->getSessionId());
+        }
+        $this->rooms[ $result->getName() ] = $result;
+
+        return $result;
+    }
+
     public function user($user)
     {
         $room = new Channels\User($user, $this->getSessionId());
         $this->target = $room->getName();
+
+        return $this;
+    }
+
+    public function currentUser()
+    {
+        $this->target = $this->getSessionId();
+
         return $this;
     }
 
@@ -199,6 +209,8 @@ class Tattler
         } else {
             $room = $this->target;
         }
+
+        $data[ 'room' ] = $room;
 
         $payload = [ 'root' => $this->getRoot(), 'room' => $room, 'bag' => $data ];
         $tattlerBag = [ 'tattlerUri' => $this->getTattlerUri(), 'payload' => $payload ];
@@ -213,6 +225,7 @@ class Tattler
 
     public function sendPayload($job, $data)
     {
+        Event::fire('grohman.tattler.sendPayload', [ $data ]);
         $result =
             HRequest::init()
                 ->uri('http://' . $data[ 'tattlerUri' ] . '/tattler/emit')
@@ -228,14 +241,4 @@ class Tattler
 
         return $result->hasErrors() == false;
     }
-    //
-    //protected function rememberSessionId()
-    //{
-    //    if (null != BackendAuth::getUser()) {
-    //        Cache::put('tattler:users:' . BackendAuth::getUser()->getKey(), $this->sessionId, Carbon::now()->addWeek());
-    //    }
-    //
-    //    return true;
-    //}
-
 }
