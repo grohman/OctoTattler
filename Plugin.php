@@ -41,24 +41,26 @@ class Plugin extends PluginBase
 
     protected function inject($widget)
     {
-        if ($widget->model->isClassExtendedWith('\Grohman\Tattler\Lib\Inject') == false) {
-            $widget->model->extendClassWith('\Grohman\Tattler\Lib\Inject');
-        }
+        if (isset($widget->model) && method_exists($widget->model, 'isClassExtendedWith')) {
+            if ($widget->model->isClassExtendedWith('\Grohman\Tattler\Lib\Inject') == false) {
+                $widget->model->extendClassWith('\Grohman\Tattler\Lib\Inject');
+            }
 
-        if (method_exists($widget, 'getColumns')) {
-            $columns = $widget->model->getWidgetColumns($widget->getColumns());
-        } else {
-            $columns = $widget->model->getWidgetColumns();
-        }
+            if (method_exists($widget, 'getColumns')) {
+                $columns = $widget->model->getWidgetColumns($widget->getColumns());
+            } else {
+                $columns = $widget->model->getWidgetColumns();
+            }
 
-        if ($columns) {
-            $room = Tattler::addRoom(get_class($widget->model));
-            $room->allow();
+            if ($columns) {
+                $room = Tattler::addRoom(get_class($widget->model));
+                $room->allow();
 
-            $user = Tattler::addUser(BackendAuth::getUser());
-            $user->allow();
+                $user = Tattler::addUser(BackendAuth::getUser());
+                $user->allow();
 
-            $this->loadAssets($widget, Tattler::getDefaultRooms([ $room->getName(), $user->getName() ]));
+                $this->loadAssets($widget, Tattler::getDefaultRooms([ $room->getName(), $user->getName() ]));
+            }
         }
     }
 
