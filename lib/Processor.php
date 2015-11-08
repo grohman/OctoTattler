@@ -26,6 +26,7 @@ class Processor
     private $restful = null;
     private $rooms = [ ];
     private $target;
+    private $tattlerApi;
 
     public function __construct()
     {
@@ -33,11 +34,13 @@ class Processor
 
         $this->root = $this->getRoot();
 
+        $this->tattlerApi = (config()->get('grohman.tattler::ssl') == true ? 'https' : 'http').'://'.$this->getTattlerUri();
+
         $json_handler = new JsonHandler([ 'decode_as_array' => true ]);
         Httpful::register('application/json', $json_handler);
 
         $this->restful = HRequest::init();
-        $this->restful->uri('http://' . $this->getTattlerUri());
+        $this->restful->uri($this->tattlerApi);
     }
 
     protected function getRoot()
@@ -125,7 +128,7 @@ class Processor
 
         $setRooms =
             HRequest::init()
-                ->uri('http://' . $this->getTattlerUri() . '/tattler/rooms')
+                ->uri($this->tattlerApi . '/tattler/rooms')
                 ->sendsType('application/json')
                 ->body($roomsQuery)
                 ->method('POST')
@@ -230,7 +233,7 @@ class Processor
         Event::fire('grohman.tattler.sendPayload', [ $data ]);
         $result =
             HRequest::init()
-                ->uri('http://' . $data[ 'tattlerUri' ] . '/tattler/emit')
+                ->uri($this->tattlerApi . '/tattler/emit')
                 ->sendsType('application/json')
                 ->body($data[ 'payload' ])
                 ->method('POST')
