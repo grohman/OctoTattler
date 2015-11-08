@@ -1,6 +1,6 @@
 <?php namespace Grohman\Tattler\Controllers;
 
-use Grohman\Tattler\Facades\Lib as Tattler;
+use Grohman\Tattler\Facades\Tattler;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 

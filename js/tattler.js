@@ -27,9 +27,19 @@
         var _this = this;
         this.basicHandlers = {
             'console.log': function (data) {
-                _this.log('warn', '-------------------------------------------------------------');
-                _this.log('warn', 'Tattler remote: ' + data['message']);
-                _this.log('warn', '-------------------------------------------------------------');
+                var log;
+                if(data['force'] !== undefined) {
+                    log = function(data){
+                        console.warn(data);
+                    }
+                } else {
+                    log = function(data){
+                        _this.log('warn', data);
+                    }
+                }
+                log('-------------------------------------------------------------');
+                log('Tattler remote: ' + data['message']);
+                log('-------------------------------------------------------------');
             },
             'alert': function (data) {
                 var text;
@@ -60,25 +70,36 @@
                 if (data['message'] == undefined && data['text'] !== undefined) {
                     opts['text'] = data['text'];
                 }
+
+                var gotPageTitle = false;
+
                 if (data['title'] !== undefined) {
                     opts['title'] = data['title'];
+                } else {
+                    opts['title'] = $.trim($('title').text());
+                    gotPageTitle = true;
                 }
 
-                if (window.Notification && window.Notification.permission == 'granted') {
-                    if (opts['title'] !== undefined) {
-                        opts['text'] = opts['title'] + "\n---------------------------------------\n" + opts['text'];
-                    }
-                    var notification = new Notification($.trim($('title').text()), {
-                        tag: data['handler'],
-                        body: opts['text'],
-                        icon: location.origin + "/themes/demo/assets/images/october.png"
-                    });
-                    setTimeout(function () {
-                        notification.close();
-                    }, 5000);
-                } else {
+                try {
 
-                    $.gritter.add(opts);
+                    if (window.Notification && window.Notification.permission == 'granted') {
+                        if (gotPageTitle == true) {
+                            opts['text'] = opts['title'] + "\n---------------------------------------\n" + opts['text'];
+                        }
+                        var notification = new Notification(opts['title'], {
+                            tag: data['handler'],
+                            body: opts['text'],
+                            icon: location.origin + "/themes/demo/assets/images/october.png"
+                        });
+                        setTimeout(function () {
+                            notification.close();
+                        }, 5000);
+                    } else {
+
+                        $.gritter.add(opts);
+                    }
+                } catch(e) {
+                    console.error('Tattler::growl', opts);
                 }
             }
         }

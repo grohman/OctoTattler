@@ -2,7 +2,7 @@
 
 use Backend\Facades\BackendAuth;
 use Event;
-use Grohman\Tattler\Facades\Lib as Tattler;
+use Grohman\Tattler\Facades\Tattler;
 use System\Classes\PluginBase;
 
 /**
@@ -29,7 +29,6 @@ class Plugin extends PluginBase
     public function boot()
     {
         if (null != config()->get('grohman.tattler::server')) {
-            // Extend all backend list usage
             Event::listen('backend.list.extendColumns', function ($widget) {
                 $this->inject($widget);
             });

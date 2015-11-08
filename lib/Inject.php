@@ -4,7 +4,7 @@ use Backend\Facades\BackendAuth;
 use Cache;
 use Carbon\Carbon;
 use Event;
-use Grohman\Tattler\Facades\Lib as Tattler;
+use Grohman\Tattler\Facades\Tattler;
 use October\Rain\Extension\ExtensionBase;
 
 class Inject extends ExtensionBase

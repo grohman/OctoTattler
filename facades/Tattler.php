@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class Lib extends Facade {
+class Tattler extends Facade {
 
     /**
      * Get the registered name of the component.
