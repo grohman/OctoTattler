@@ -67,11 +67,13 @@ var ocCrudHandlers = function () {
         }
 
         if (desktopNotifications && desktopNotifications !== 'denied') {
-            var notification = new Notification($.trim($('title').text()), {
-                tag: type,
-                body: growlOpts['title'] + "\n" + author + "\n" + growlOpts['text'],
-                icon: location.origin + "/themes/demo/assets/images/october.png"
+            var notification = new Notification(growlOpts['title'], {
+                tag: 'crud_'+type,
+                body: $.trim($('title').text().split('|')[0]) + "\n" + author + "\n" + growlOpts['text'],
+                icon: location.origin + "/themes/demo/assets/images/october.png",
+                lang: $('html').attr('lang')
             });
+            console.log(notification)
             setTimeout(function(){
                 notification.close();
             }, 5000);
