@@ -11,13 +11,15 @@ use Queue;
 use Session;
 
 /*
- * Tattler::room(new \Grohman\Reviews\Models\Item)->say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'В комнату модуля Reviews']);
- * Tattler::user(\Backend\Models\User::first())->say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'Админу']);
- * Tattler::currentUser()->say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'Себе в браузер']);
- * Tattler::say(['handler'=>'growl', 'message'=>'Тестовое сообщение', 'title'=>'Всем']);
+ * use Grohman\Tattler\Facades\Tattler;
+ *
+ * Tattler::say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For anyone']);
+ * Tattler::room(new \Grohman\Reviews\Models\Item)->say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For anyone in Reviews']);
+ * Tattler::user(\Backend\Models\User::first())->say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For backend admin']);
+ * Tattler::currentUser()->say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For current user']);
  * */
 
-class Tattler
+class Processor
 {
     private $sessionId = null;
     private $root = null;
@@ -217,7 +219,7 @@ class Tattler
         if ($now) {
             return $this->sendPayload(null, $tattlerBag);
         } else {
-            Queue::push('Grohman\Tattler\Lib\Tattler@sendPayload', $tattlerBag);
+            Queue::push('Grohman\Tattler\Lib\Processor@sendPayload', $tattlerBag);
         }
 
         return true;

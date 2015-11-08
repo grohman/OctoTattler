@@ -9,6 +9,6 @@ class Tattler extends Facade {
      *
      * @return string
      */
-    protected static function getFacadeAccessor() { return 'Grohman\Tattler\Lib\Tattler'; }
+    protected static function getFacadeAccessor() { return 'Grohman\Tattler\Lib\Processor'; }
 
 }

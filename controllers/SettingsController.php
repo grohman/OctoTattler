@@ -7,7 +7,7 @@ use Illuminate\Routing\Controller;
 /**
  * Tattler Controller Back-end Controller
  */
-class TattlerController extends Controller
+class SettingsController extends Controller
 {
 
     /** Получение адреса сокета

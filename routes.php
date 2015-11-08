@@ -1,4 +1,4 @@
 <?php
 
-    Route::get('_tattler', 'Grohman\Tattler\Controllers\TattlerController@getIndex');
-    Route::post('_tattler', 'Grohman\Tattler\Controllers\TattlerController@postIndex');
+    Route::get('_tattler', 'Grohman\Tattler\Controllers\SettingsController@getIndex');
+    Route::post('_tattler', 'Grohman\Tattler\Controllers\SettingsController@postIndex');
