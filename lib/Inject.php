@@ -4,7 +4,9 @@ use Backend\Facades\BackendAuth;
 use Cache;
 use Carbon\Carbon;
 use Event;
+use Exception;
 use Grohman\Tattler\Facades\Tattler;
+use Log;
 use October\Rain\Extension\ExtensionBase;
 
 class Inject extends ExtensionBase
@@ -46,31 +48,34 @@ class Inject extends ExtensionBase
      */
     protected function tattlerCollectMessageBag($model, $handler)
     {
-        $message = [ ];
+        try {
+            $message = [ ];
 
-        $columns = $this->target->getWidgetColumns(); // метод добавляется динамически из Plugin
+            $columns = $this->target->getWidgetColumns(); // метод добавляется динамически из Plugin
 
-        $modelData = $model->toArray();
+            $modelData = $model->toArray();
 
-        foreach ($columns as $column => $name) {
-            if (isset($modelData[ $column ]) && is_object($model[ $column ]) == false && is_array($model[ $column ]) == false && $modelData[ $column ] != '') {
-                $message[ $column ] = $modelData[ $column ];
+            foreach ($columns as $column => $name) {
+                if (isset($modelData[ $column ]) && is_object($model[ $column ]) == false && is_array($model[ $column ]) == false && $modelData[ $column ] != '') {
+                    $message[ $column ] = $modelData[ $column ];
+                }
             }
+
+            $result = [
+                'message_id' => uniqid(),
+                'handler' => $handler,
+                'row_id' => $model->getKey(),
+                'row_key' => $model->getKeyName(),
+                'by' => $this->getUser(),
+                'at' => Carbon::now(),
+                'columns' => $columns,
+                'row_data' => $message
+            ];
+
+            return $result;
+        } catch(Exception $e){
+            Log::error('Tattler::collectMessageBag -> '.$e->getMessage());
         }
-
-
-        $result = [
-            'message_id' => uniqid(),
-            'handler' => $handler,
-            'row_id' => $model->getKey(),
-            'row_key' => $model->getKeyName(),
-            'by' => $this->getUser(),
-            'at' => Carbon::now(),
-            'columns' => $columns,
-            'row_data' => $message
-        ];
-
-        return $result;
     }
 
     /** Возвращает данные о текущем пользователе. Пусть все знают кто сделал изменения в базе данных.
