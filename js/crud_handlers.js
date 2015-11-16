@@ -32,7 +32,7 @@ var ocCrudHandlers = function () {
         for (var i in data['columns']) {
             if (n < 5) {
                 if (data['row_data'][i] !== undefined) {
-                    rowMessage.push(data['columns'][i] + ': ' + data['row_data'][i]);
+                    rowMessage.push(data['columns'][i] + ': ' + $('<div>').text(data['row_data'][i].toString()).html());
                     n++;
                 }
             } else {
@@ -68,13 +68,13 @@ var ocCrudHandlers = function () {
 
         if (desktopNotifications && desktopNotifications !== 'denied') {
             var notification = new Notification(growlOpts['title'], {
-                tag: 'crud_'+type,
+                tag: 'crud_' + type,
                 body: $.trim($('title').text().split('|')[0]) + "\n" + author + "\n" + growlOpts['text'],
                 icon: location.origin + "/themes/demo/assets/images/october.png",
                 lang: $('html').attr('lang')
             });
             console.log(notification)
-            setTimeout(function(){
+            setTimeout(function () {
                 notification.close();
             }, 5000);
         } else {
