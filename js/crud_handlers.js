@@ -32,7 +32,7 @@ var ocCrudHandlers = function () {
         for (var i in data['columns']) {
             if (n < 5) {
                 if (data['row_data'][i] !== undefined) {
-                    rowMessage.push(data['columns'][i] + ': ' + $('<div>').text(data['row_data'][i].toString()).html());
+                    rowMessage.push(data['columns'][i] + ': ' + $('<div>').text(data['row_data'][i]).html());
                     n++;
                 }
             } else {

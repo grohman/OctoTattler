@@ -64,11 +64,11 @@
             },
             'growl': function (data) {
                 var opts = {
-                    'text': data['message'],
+                    'text': $("<div>").text(data['message']).html(),
                     'sticky': false
                 };
                 if (data['message'] == undefined && data['text'] !== undefined) {
-                    opts['text'] = data['text'];
+                    opts['text'] = $("<div>").text(data['text']).html();
                 }
 
                 var gotPageTitle = false;
