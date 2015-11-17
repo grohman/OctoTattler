@@ -19,9 +19,9 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name' => 'tattler',
+            'name' => 'OctoTattler',
             'description' => 'No description provided yet...',
-            'author' => 'Grohman',
+            'author' => 'Daniel Podrabinek',
             'icon' => 'icon-leaf'
         ];
     }
