@@ -34,7 +34,8 @@ class Processor
 
         $this->root = $this->getRoot();
 
-        $this->tattlerApi = (config()->get('grohman.tattler::ssl') == true ? 'https' : 'http').'://'.$this->getTattlerUri();
+        $this->tattlerApi =
+            (config()->get('grohman.tattler::ssl') == true ? 'https' : 'http') . '://' . $this->getTattlerUri();
 
         $json_handler = new JsonHandler([ 'decode_as_array' => true ]);
         Httpful::register('application/json', $json_handler);
@@ -238,12 +239,40 @@ class Processor
                 ->body($data[ 'payload' ])
                 ->method('POST')
                 ->send();
+
+
+        $noErrors = $result->hasErrors() == false;
+
         if ($job) {
-            $job->delete();
+            if ($noErrors) {
+                $job->delete();
+            } else {
+                if ($job->attempts() < 5) {
+                    \Log::error('Tattler: restarting job ' . $job->getJobId());
+                    $job->release(1);
+                } else {
+                    throw new \Exception('Tattler: ' . $job->getJobId() . ' failed');
+                }
+            }
 
             return;
-        }
+        } else {
+            if (isset($data[ 'attempt' ]) == false) {
+                $data[ 'attempt' ] = 1;
+            } else {
+                $data[ 'attempt' ]++;
+            }
+            if ($noErrors) {
+                return true;
+            } else {
+                if ($data[ 'attempt' ] < 5) {
+                    sleep(1);
 
-        return $result->hasErrors() == false;
+                    return $this->sendPayload($job, $data);
+                } else {
+                    throw new \Exception('Tattler: sendPayload failed -> ' . $result->body);
+                }
+            }
+        }
     }
 }
