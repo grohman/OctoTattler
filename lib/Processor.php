@@ -148,6 +148,10 @@ class Processor
         }
         $allowedRooms = 'tattler:access:' . $this->sessionId;
         $myRooms = Cache::get($allowedRooms);
+        if (false == is_array($myRooms)) {
+            $myRooms = [ ];
+            Log::warning('Tattler: no allowed rooms for ' . $this->sessionId);
+        }
         $result = [ 'broadcast', $this->getSessionId() ];
         foreach ($rooms as $room) {
             if (in_array($room, $myRooms)) {
