@@ -22,6 +22,9 @@ class Inject extends ExtensionBase
             }
         });
         Event::listen('eloquent.updated:*', function ($model) use ($target) {
+            if(get_class($model) == 'RainLab\User\Models\User' && $this->getUser()['id'] == null) { // пропускаем сообщения об авторизации
+                return;
+            }
             if (get_class($model) == get_class($target)) {
                 Tattler::room($this->getRoom())->say($this->tattlerCollectMessageBag($model, 'crud_update'));
             }
