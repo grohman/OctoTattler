@@ -192,6 +192,9 @@ class Processor
         } else {
             $result = new Channels\Room($room, $this->getSessionId());
         }
+
+        Event::fire('tattler.addRoom', [$result]);
+
         $this->rooms[ $result->getName() ] = $result;
 
         return $result;

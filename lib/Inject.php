@@ -41,7 +41,9 @@ class Inject extends ExtensionBase
      */
     public function getRoom()
     {
-        return get_class($this->target);
+        $result = get_class($this->target);
+        Event::fire('tattler.getRoom', [&$result]);
+        return $result;
     }
 
     /** Подготовка к отправке данных в сокет
@@ -105,7 +107,7 @@ class Inject extends ExtensionBase
     public function getWidgetColumns($columns = null)
     {
         if($columns) {
-            return Cache::rememberForever($this->getCacheIdx(), function () use ($columns) {
+            return Cache::remember($this->getCacheIdx(), 1440, function () use ($columns) {
                 $result = [ ];
                 foreach ($columns as $column => $col) {
                     $result[ $column ] = trans($col->label);
