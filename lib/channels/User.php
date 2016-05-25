@@ -1,6 +1,7 @@
 <?php namespace Grohman\Tattler\Lib\Channels;
 
 use Carbon\Carbon;
+use Exception;
 use Grohman\Tattler\Lib\Interfaces\Channel;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
