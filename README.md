@@ -20,3 +20,6 @@ cd -
 php artisan october:up
 
 Add 'Tattler' => Grohman\Tattler\Facades\Tattler::class to config/app.php in section 'aliases'
+
+-------
+Usage example: https://youtu.be/yCIuFlBCCGA
