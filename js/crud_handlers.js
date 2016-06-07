@@ -9,6 +9,26 @@ var ocCrudHandlers = function () {
         });
     }
 
+    var getMessageTitle = function (id) {
+        var strings = {
+            'en': {
+                'update': 'Item updated',
+                'create': 'Item created',
+                'delete': 'Item deleted'
+            },
+            'ru': {
+                'update': 'Обновлена запись',
+                'create': 'Добавлена запись',
+                'delete': 'Удалена запись'
+            },
+        };
+        if (navigator.language.match(/ru/)) {
+            return strings['ru'][id];
+        } else {
+            return strings['en'][id];
+        }
+    }
+
     var notifyAndHighlight = function (data, type, callback) {
         if (window['debugCrud'] !== undefined) {
             console.info('CRUD: ' + type, data, 'callback: ' + callback)
@@ -53,11 +73,11 @@ var ocCrudHandlers = function () {
             'sticky': false
         };
         if (type == 'update') {
-            growlOpts['title'] = 'Обновлена запись';
+            growlOpts['title'] = getMessageTitle('update');
         } else if (type == 'create') {
-            growlOpts['title'] = 'Добавлена запись';
+            growlOpts['title'] = getMessageTitle('create');
         } else if (type == 'delete') {
-            growlOpts['title'] = 'Удалена запись';
+            growlOpts['title'] = getMessageTitle('delete');
         }
 
         var author = 'Автор: ' + data['by']['name'];

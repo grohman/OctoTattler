@@ -142,9 +142,9 @@
                     _this['ws'] = res['ws'].replace(/\/$/, "");
                     _this.connect();
                 }).error(function () {
-                    var err = 'Ошибка при создании сокета: сервер не сообщил адрес для подключения';
+                    var err = 'Error opening socket: url not defined';
                     _this.log('error', err);
-                    $.alert(err, null, {title: 'Ошибка Tattler'});
+                    $.alert(err, null, {title: 'Tattler error'});
                 });
             } else {
                 this.connect();
@@ -218,7 +218,7 @@
                     }
                 },
                 errorCallback: function (xhr) {
-                    console.error('Tattler: ошибка при запросе доступа к каналам связи', rooms, xhr)
+                    console.error('Tattler: failed to receive rooms listing', rooms, xhr)
                 },
                 complete: function () {
                     _this.log('log', 'Tattler: access request for ' + socketId + ' is complete');
