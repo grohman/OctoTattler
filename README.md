@@ -1,3 +1,8 @@
+# Tattler
+
+-------
+Usage example: https://youtu.be/yCIuFlBCCGA
+
 Install and run Tattler backend: https://github.com/grohman/tattler
 
 Then git clone https://github.com/grohman/OctoTattler.git plugins/grohman/tattler
@@ -20,6 +25,3 @@ cd -
 php artisan october:up
 
 Add 'Tattler' => Grohman\Tattler\Facades\Tattler::class to config/app.php in section 'aliases'
-
--------
-Usage example: https://youtu.be/yCIuFlBCCGA
