@@ -6,6 +6,7 @@ Usage example: https://youtu.be/yCIuFlBCCGA
 Install and run Tattler backend: https://github.com/grohman/tattler
 
 Then git clone https://github.com/grohman/OctoTattler.git plugins/grohman/tattler
+
 or
 
 git submodle init
