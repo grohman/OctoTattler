@@ -14,15 +14,17 @@ var ocCrudHandlers = function () {
             'en': {
                 'update': 'Item updated',
                 'create': 'Item created',
-                'delete': 'Item deleted'
+                'delete': 'Item deleted',
+                'author': 'By'
             },
             'ru': {
                 'update': 'Обновлена запись',
                 'create': 'Добавлена запись',
-                'delete': 'Удалена запись'
+                'delete': 'Удалена запись',
+                'author': 'Автор:'
             },
         };
-        if (navigator.language.match(/ru/)) {
+        if (navigator.language.match(/rus/)) {
             return strings['ru'][id];
         } else {
             return strings['en'][id];
@@ -80,7 +82,7 @@ var ocCrudHandlers = function () {
             growlOpts['title'] = getMessageTitle('delete');
         }
 
-        var author = 'Автор: ' + data['by']['name'];
+        var author = getMessageTitle('author')+' ' + data['by']['name'];
 
         for (var i in growlRows) {
             growlOpts['text'] = growlRows.join('<br>')
