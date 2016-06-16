@@ -20,7 +20,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'OctoTattler',
-            'description' => 'No description provided yet...',
+            'description' => 'October Tattler plugin',
             'author'      => 'Daniel Podrabinek',
             'icon'        => 'icon-leaf',
         ];
