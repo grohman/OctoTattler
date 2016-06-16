@@ -150,7 +150,9 @@ class Processor
         $myRooms = Cache::get($allowedRooms);
         if (false == is_array($myRooms)) {
             $myRooms = [ ];
-            Log::warning('Tattler: no allowed rooms for ' . $this->sessionId);
+            if(config()->get('app.debug') == 1) {
+                Log::warning('Tattler: no allowed rooms for ' . $this->sessionId);
+            }
         }
         $result = [ 'broadcast', $this->getSessionId() ];
         foreach ($rooms as $room) {
@@ -255,7 +257,9 @@ class Processor
                 $job->delete();
             } else {
                 if ($job->attempts() < 5) {
-                    \Log::error('Tattler: restarting job ' . $job->getJobId());
+                    if(config()->get('app.debug') == 1) {
+                        \Log::error('Tattler: restarting job ' . $job->getJobId());
+                    }
                     $job->release(1);
                 } else {
                     throw new \Exception('Tattler: ' . $job->getJobId() . ' failed');

@@ -79,7 +79,9 @@ class Inject extends ExtensionBase
 
             return $result;
         } catch(Exception $e){
-            Log::error('Tattler::collectMessageBag -> '.$e->getMessage());
+            if(config()->get('app.debug') == 1) {
+                Log::error('Tattler::collectMessageBag -> ' . $e->getMessage());
+            }
         }
     }
 
