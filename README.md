@@ -30,7 +30,7 @@ Then from php run `Tattler::say(['handler'=>'mySuperHandler', 'anything'=>['else
  Install and run Tattler backend: https://github.com/grohman/tattler
  Then `git clone https://github.com/grohman/OctoTattler.git plugins/grohman/tattler`
    or
-    `git submodle init && git submodule add https://github.com/grohman/OctoTattler plugins/grohman/tattler`
+    `git submodule init && git submodule add https://github.com/grohman/OctoTattler plugins/grohman/tattler`
 
    
 
