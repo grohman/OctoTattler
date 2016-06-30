@@ -1,9 +1,12 @@
-# Tattler
+# OctoTattler
+
+**Description**
+This code allows you to send async notifications to users with web-socket. This is version for Laravel-based OctoberCMS.
 
 -------
-Usage example: [https://youtu.be/yCIuFlBCCGA](https://youtu.be/yCIuFlBCCGA)
+**Usage examples:** 
+[https://youtu.be/yCIuFlBCCGA](https://youtu.be/yCIuFlBCCGA)
 
--------
     Tattler::say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For anyone']);
 
     Tattler::room('broadcast')->say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For anyone']);
@@ -22,31 +25,26 @@ Adding new js handlers:
 Then from php run `Tattler::say(['handler'=>'mySuperHandler', 'anything'=>['else'], [1,2,3]]);`
 
 -------
-Install and run Tattler backend: https://github.com/grohman/tattler
+**Installation**
 
-Then git clone https://github.com/grohman/OctoTattler.git plugins/grohman/tattler
+ - Install and run Tattler backend: https://github.com/grohman/tattler
+ - Then 
+    git clone https://github.com/grohman/OctoTattler.git
+       plugins/grohman/tattler
+   or 
+       git submodle init && git submodule add https://github.com/grohman/OctoTattler
+       plugins/grohman/tattler
 
-or
+   
 
-git submodle init
+ -     echo TATTLER_SERVER=tattler.yourdomain.tld >> .env
 
-git submodule add https://github.com/grohman/OctoTattler plugins/grohman/tattler
+ -     cd plugins/grohman/tattler
 
---------
+ -     composer install
 
-echo TATTLER_SERVER=tattler.yourdomain.tld >> .env
+ -     cd -
 
-cd plugins/grohman/tattler
+ -     php artisan october:up
 
-composer install
-
-cd -
-
-php artisan october:up
-
-Add 'Tattler' => Grohman\Tattler\Facades\Tattler::class to config/app.php in section 'aliases'
-
-
-
-
-
+ -     Add 'Tattler' => Grohman\Tattler\Facades\Tattler::class to config/app.php in section 'aliases'
