@@ -5,12 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 /**
- * Tattler Controller Back-end Controller
+ * Class SettingsController
+ * @package Grohman\Tattler\Controllers
  */
 class SettingsController extends Controller
 {
 
-    /** Получение адреса сокета
+    /**
      * @param Request $request
      * @return mixed
      */
@@ -19,7 +20,7 @@ class SettingsController extends Controller
         return Tattler::getWs($request->isSecure());
     }
 
-    /** Отправка socketId и листинга запрашиваемых комнат
+    /**
      * @param Request $request
      * @return mixed
      */

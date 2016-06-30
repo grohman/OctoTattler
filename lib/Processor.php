@@ -1,33 +1,52 @@
 <?php namespace Grohman\Tattler\Lib;
 
-use Cache;
-use Event;
+use Grohman\Tattler\Lib\Channels\Room;
+use Grohman\Tattler\Lib\Interfaces\Channel;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Httpful\Handlers\JsonHandler;
 use Httpful\Httpful;
 use Httpful\Request as HRequest;
 use Illuminate\Support\Str;
-use Log;
-use Queue;
-use Session;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Session;
 
-/*
- * use Grohman\Tattler\Facades\Tattler;
- *
- * Tattler::say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For anyone']);
- * Tattler::room(new \Grohman\Reviews\Models\Item)->say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For anyone in Reviews']);
- * Tattler::user(\Backend\Models\User::first())->say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For backend admin']);
- * Tattler::currentUser()->say(['handler'=>'growl', 'message'=>'Test message', 'title'=>'For current user']);
- * */
 
+/**
+ * Class Processor
+ * @package Grohman\Tattler\Lib
+ */
 class Processor
 {
+    /**
+     * @var null
+     */
     private $sessionId = null;
+    /**
+     * @var null
+     */
     private $root = null;
+    /**
+     * @var HRequest|null
+     */
     private $restful = null;
+    /**
+     * @var array
+     */
     private $rooms = [ ];
+    /**
+     * @var
+     */
     private $target;
+    /**
+     * @var string
+     */
     private $tattlerApi;
 
+    /**
+     * Processor constructor.
+     */
     public function __construct()
     {
         $this->setSessionId();
@@ -37,13 +56,16 @@ class Processor
         $this->tattlerApi =
             (config()->get('grohman.tattler::ssl') == true ? 'https' : 'http') . '://' . $this->getTattlerUri();
 
-        $json_handler = new JsonHandler([ 'decode_as_array' => true ]);
-        Httpful::register('application/json', $json_handler);
+        $jsonHandler = new JsonHandler([ 'decode_as_array' => true ]);
+        Httpful::register('application/json', $jsonHandler);
 
         $this->restful = HRequest::init();
         $this->restful->uri($this->tattlerApi);
     }
 
+    /**
+     * @return mixed
+     */
     protected function getRoot()
     {
         $result = config()->get('grohman.tattler::root');
@@ -56,11 +78,18 @@ class Processor
         return $result;
     }
 
+    /**
+     * @return mixed
+     */
     protected function getTattlerUri()
     {
         return config()->get('grohman.tattler::server');
     }
 
+    /**
+     * @param $user
+     * @return Channels\User
+     */
     public function addUser($user)
     {
         $room = new Channels\User($user, $this->getSessionId());
@@ -69,11 +98,18 @@ class Processor
         return $room;
     }
 
+    /**
+     * @return null
+     */
     public function getSessionId()
     {
         return $this->sessionId;
     }
 
+    /**
+     * @param null $value
+     * @return null
+     */
     public function setSessionId($value = null)
     {
         if ($value == null && config()->get('session.driver') != 'array') {
@@ -87,8 +123,13 @@ class Processor
             return null;
         }
         $this->sessionId = $value;
+        return true;
     }
 
+    /**
+     * @param bool $secure
+     * @return array
+     */
     public function getWs($secure = false)
     {
         if ($secure || config()->get('grohman.tattler::ssl') == true) {
@@ -100,6 +141,10 @@ class Processor
         return [ 'ws' => $prefix . '://' . config()->get('grohman.tattler::server') ];
     }
 
+    /**
+     * @param $query
+     * @return array
+     */
     public function getRooms($query)
     {
         if ($this->sessionId == null) {
@@ -141,6 +186,10 @@ class Processor
         return $result;
     }
 
+    /**
+     * @param array $rooms
+     * @return array
+     */
     protected function validateRoomsAccess(Array $rooms)
     {
         if ($this->sessionId == null) {
@@ -164,6 +213,10 @@ class Processor
         return array_unique($result);
     }
 
+    /**
+     * @param array $extraRooms
+     * @return array
+     */
     public function getDefaultRooms($extraRooms = [ ])
     {
         $result = [ 'broadcast', $this->getSessionId() ];
@@ -174,6 +227,10 @@ class Processor
         return $result;
     }
 
+    /**
+     * @param $room
+     * @return $this
+     */
     public function room($room)
     {
         if (is_string($room)) {
@@ -187,6 +244,10 @@ class Processor
         return $this;
     }
 
+    /**
+     * @param $room
+     * @return Channels\Room
+     */
     public function addRoom($room)
     {
         if ($room instanceof Room) {
@@ -202,6 +263,10 @@ class Processor
         return $result;
     }
 
+    /**
+     * @param $user
+     * @return $this
+     */
     public function user($user)
     {
         $room = new Channels\User($user, $this->getSessionId());
@@ -210,6 +275,9 @@ class Processor
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function currentUser()
     {
         $this->target = $this->getSessionId();
@@ -217,6 +285,12 @@ class Processor
         return $this;
     }
 
+    /**
+     * @param      $data
+     * @param bool $now
+     * @return bool
+     * @throws \Exception
+     */
     public function say($data, $now = false)
     {
         if ($this->target == null) {
@@ -238,6 +312,12 @@ class Processor
         return true;
     }
 
+    /**
+     * @param $job
+     * @param $data
+     * @return bool|void
+     * @throws \Exception
+     */
     public function sendPayload($job, $data)
     {
         Event::fire('grohman.tattler.sendPayload', [ $data ]);

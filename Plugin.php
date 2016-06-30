@@ -1,19 +1,18 @@
 <?php namespace Grohman\Tattler;
 
 use Backend\Facades\BackendAuth;
-use Event;
 use Grohman\Tattler\Facades\Tattler;
+use Illuminate\Support\Facades\Event;
 use System\Classes\PluginBase;
 
 /**
- * tattler Plugin Information File
+ * Class Plugin
+ * @package Grohman\Tattler
  */
 class Plugin extends PluginBase
 {
 
     /**
-     * Returns information about this plugin.
-     *
      * @return array
      */
     public function pluginDetails()
@@ -26,6 +25,9 @@ class Plugin extends PluginBase
         ];
     }
 
+    /**
+     *
+     */
     public function boot()
     {
         if (null != config()->get('grohman.tattler::server')) {
@@ -39,6 +41,9 @@ class Plugin extends PluginBase
         }
     }
 
+    /**
+     * @param $widget
+     */
     protected function inject($widget)
     {
         if (isset($widget->model) && method_exists($widget->model, 'isClassExtendedWith')) {
@@ -67,6 +72,10 @@ class Plugin extends PluginBase
         }
     }
 
+    /**
+     * @param $widget
+     * @param $rooms
+     */
     protected function loadAssets($widget, $rooms)
     {
         $widget->addCss('https://cdn.jsdelivr.net/jquery.gritter/1.7.4/css/jquery.gritter.css');

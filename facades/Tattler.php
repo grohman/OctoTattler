@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * Class Tattler
+ * @package Grohman\Tattler\Facades
+ */
 class Tattler extends Facade {
 
     /**

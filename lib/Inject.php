@@ -1,18 +1,29 @@
 <?php namespace Grohman\Tattler\Lib;
 
 use Backend\Facades\BackendAuth;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
-use Event;
+use Illuminate\Support\Facades\Event;
 use Exception;
 use Grohman\Tattler\Facades\Tattler;
-use Log;
+use Illuminate\Support\Facades\Log;
 use October\Rain\Extension\ExtensionBase;
 
+/**
+ * Class Inject
+ * @package Grohman\Tattler\Lib
+ */
 class Inject extends ExtensionBase
 {
+    /**
+     * @var
+     */
     protected $target;
 
+    /**
+     * Inject constructor.
+     * @param $target
+     */
     public function __construct($target)
     {
         $this->target = $target;
@@ -36,7 +47,7 @@ class Inject extends ExtensionBase
         });
     }
 
-    /** Возвращает имя комнаты для реализации канала трафика в сокет
+    /**
      * @return mixed
      */
     public function getRoom()
@@ -46,7 +57,7 @@ class Inject extends ExtensionBase
         return $result;
     }
 
-    /** Подготовка к отправке данных в сокет
+    /**
      * @param $model
      * @param $handler
      * @return array
@@ -85,7 +96,7 @@ class Inject extends ExtensionBase
         }
     }
 
-    /** Возвращает данные о текущем пользователе. Пусть все знают кто сделал изменения в базе данных.
+    /**
      * @return array
      */
     protected function getUser()
@@ -98,7 +109,7 @@ class Inject extends ExtensionBase
         return ['id' => null, 'name' => 'Анонимно'];
     }
 
-    /** Возвращает ключ массива с названиями столбцов, полученных в Plugin
+    /**
      * @return string
      */
     public function getCacheIdx()
@@ -106,6 +117,10 @@ class Inject extends ExtensionBase
         return 'tattler:models:' . get_class($this->target) . ':' . app()->getLocale();
     }
 
+    /**
+     * @param null $columns
+     * @return mixed
+     */
     public function getWidgetColumns($columns = null)
     {
         if($columns) {
@@ -122,6 +137,9 @@ class Inject extends ExtensionBase
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function forgetWidgetColumns()
     {
         return Cache::forget($this->getCacheIdx());

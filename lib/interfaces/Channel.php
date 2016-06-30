@@ -1,19 +1,29 @@
 <?php namespace Grohman\Tattler\Lib\Interfaces;
 
 /**
- * Created by PhpStorm.
- * User: grohman
- * Date: 04.11.15
- * Time: 17:51
+ * Interface Channel
+ * @package Grohman\Tattler\Lib\Interfaces
  */
 interface Channel
 {
+    /**
+     * @return mixed
+     */
     public function getName();
 
+    /**
+     * @return mixed
+     */
     public function allow();
 
+    /**
+     * @return mixed
+     */
     public function deny();
 
+    /**
+     * @return mixed
+     */
     public function allowed();
 
 }
