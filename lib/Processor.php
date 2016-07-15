@@ -342,6 +342,7 @@ class Processor
                     }
                     $job->release(1);
                 } else {
+                    $job->delete();
                     throw new \Exception('Tattler: ' . $job->getJobId() . ' failed');
                 }
             }
