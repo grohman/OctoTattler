@@ -24,7 +24,7 @@ var ocCrudHandlers = function () {
                 'author': 'Автор:'
             },
         };
-        if (navigator.language.match(/rus/)) {
+        if (navigator.language.match(/ru/)) {
             return strings['ru'][id];
         } else {
             return strings['en'][id];
