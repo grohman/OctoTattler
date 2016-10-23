@@ -1,7 +1,7 @@
 # OctoTattler
 
 ##This is an old version of Tattler-October
-##See https://github.com/grohman/tattler-october
+##See https://github.com/grohman/tattler-octobercms
 
 
 **Description:**
