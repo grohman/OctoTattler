@@ -1,7 +1,8 @@
 # OctoTattler
 
-This is an old version of Tattler-October
-See https://github.com/grohman/tattler-october
+##This is an old version of Tattler-October
+##See https://github.com/grohman/tattler-october
+
 
 **Description:**
 This code allows you to send async notifications to users with web-socket. This is version for Laravel-based OctoberCMS.
